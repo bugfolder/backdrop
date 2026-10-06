@@ -303,13 +303,17 @@ function file_display_form($form, &$form_state, $file_type, $view_mode) {
   $form['#file_type'] = $file_type->type;
   $form['#view_mode'] = $view_mode;
   $form['#tree'] = TRUE;
-  $form['#attached']['js'][] = backdrop_get_path('module', 'file') . '/js/file.admin.js';
 
   // Retrieve available formatters for this file type.
   $formatters = file_info_formatter_types();
 
   foreach ($formatters as $name => $formatter) {
     if (!empty($formatter['hidden'])) {
+      unset($formatters[$name]);
+    }
+    if (!isset($formatter['view callback']) || !function_exists($formatter['view callback'])) {
+      // Don't include the formatters for which file_view_file() would show a
+      // link to the file as fallback.
       unset($formatters[$name]);
     }
     if (isset($formatter['mime types'])) {
@@ -347,7 +351,7 @@ function file_display_form($form, &$form_state, $file_type, $view_mode) {
       if (!empty($settings_form)) {
         $form['display']['settings'][$name] = array(
           '#type' => 'fieldset',
-          '#title' => check_plain($formatter['label']) . ' ' . t('settings'),
+          '#title' => t('@label settings', array('@label' => $formatter['label'])),
           '#parents' => array('display', 'settings', $name),
           '#group' => 'display_settings',
           '#states' => array(
@@ -549,7 +553,7 @@ function file_settings_form($form, &$form_state) {
     '#type' => 'checkbox',
     '#title' => t('Skip scheme selection.'),
     '#default_value' => $config->get('upload_wizard_skip_scheme'),
-    '#description' => t('The scheme selection step is only available if two or more file destinations, such as public local files served by the webserver and private local files served by Drupal, are available. If this step is skipped, files will automatically be saved using the default download method.'),
+    '#description' => t('The scheme selection step is only available if two or more file destinations, such as public local files served by the webserver and private local files served by Backdrop, are available. If this step is skipped, files will automatically be saved using the default download method.'),
   );
   $form['file_upload_wizard']['upload_wizard_skip_fields'] = array(
     '#type' => 'checkbox',
@@ -575,7 +579,7 @@ function file_settings_form($form, &$form_state) {
     '#type' => 'checkbox',
     '#title' => t('Protect against repeat rendering'),
     '#default_value' => $config->get('protect_repeated_render'),
-    '#description' => t('Avoid rendering the same file more than 10 times. This can be a sign of an image getting caught in a recursive render, but it can also be triggered when the same image is rendered more than 20 times, e.g. in an long content list or data feed.'),
+    '#description' => t('Avoid rendering the same file more than 10 times. This can be a sign of an image getting caught in a recursive render, but it can also be triggered when the same image is rendered more than 20 times, e.g. in a long content list or data feed.'),
   );
 
   return system_settings_form($form);

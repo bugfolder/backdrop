@@ -45,6 +45,13 @@ function node_overview_types() {
         'weight' => 10,
       );
     }
+    if (user_access('administer layouts')) {
+      $links['node_layout'] = array(
+        'title' => t('Manage layout'),
+        'href' => 'admin/structure/types/manage/' . $type_url_str . '/layouts',
+        'weight' => 11,
+      );
+    }
     if ($type->module === 'node') {
       $links['delete'] = array(
         'title' => t('Delete'),
@@ -418,7 +425,7 @@ function node_type_form($form, &$form_state, $type = NULL) {
   );
   $form['revision']['revision']['revision_enabled'] = array(
     '#type' => 'checkbox',
-    '#title' => t('Show option to create new revisions'),
+    '#title' => t('Enable option to create revisions'),
     '#default_value' => $type->settings['revision_enabled'],
     '#parents' => array('revision_enabled'),
     '#description' => t('Revisions allow content editors to view changes over time and revert changes if needed.'),
@@ -426,8 +433,17 @@ function node_type_form($form, &$form_state, $type = NULL) {
   $form['revision']['revision']['revision_default'] = array(
     '#type' => 'checkbox',
     '#title' => t('Create new revision by default'),
+    '#description' => t('If enabled, revisions to content will be created by default. People with the "Administer content" permission will see an option to create a revision.'),
     '#default_value' => $type->settings['revision_default'],
     '#parents' => array('revision_default'),
+    '#states' => array(
+      'visible' => array(
+        'input[name="revision_enabled"]' => array('checked' => TRUE),
+      ),
+      'enabled' => array(
+        'input[name="revision_enabled"]' => array('checked' => TRUE),
+      ),
+    ),
   );
 
   // Menu settings.
@@ -688,6 +704,15 @@ function node_type_form_permissions($type) {
 
   $permissions = !empty($type) ? node_list_permissions($type) : $default_perms;
 
+  // Modules invoking hook_node_type_list_permissions() can add to the
+  // permissions displayed.
+  foreach (module_implements('node_type_list_permissions') as $module) {
+    $additional_permissions = module_invoke($module, 'node_type_list_permissions', $type);
+    foreach ($additional_permissions as $permission_name => $permission_info) {
+      $permissions[$permission_name] = $permission_info;
+    }
+  }
+
   $status = array();
   foreach ($permissions as $perm => $perm_item) {
     // Fill in default values for the permission.
@@ -761,9 +786,9 @@ function node_node_type_load(&$types) {
       'node_preview' => TRUE,
 
       // Submitted information.
-      'node_submitted' => TRUE,
+      'node_submitted' => FALSE,
       'node_submitted_format' => t('[node:created:medium] by [node:author]'),
-      'node_user_picture' => TRUE,
+      'node_user_picture' => FALSE,
 
       // Setting to prevent page from being accessed directly.
       'hidden_path' => FALSE,

@@ -12,8 +12,8 @@ class LayoutRendererEditor extends LayoutRendererStandard {
     parent::__construct($layout, $renderer_plugin);
 
     // Set the page title region if not already.
-    if (!isset($this->layout_info['regions']['title'])) {
-      $this->layout_info['regions']['title'] = t('Page title');
+    if (!isset($this->layout_template_info['regions']['title'])) {
+      $this->layout_template_info['regions']['title'] = t('Page title');
     }
     $this->admin = TRUE;
 
@@ -25,8 +25,7 @@ class LayoutRendererEditor extends LayoutRendererStandard {
   function addMeta() {
     parent::addMeta();
     backdrop_add_library('system', 'ui.sortable');
-    backdrop_add_js(backdrop_get_path('module', 'layout') . '/js/layout.admin.js');
-    backdrop_add_css(backdrop_get_path('module', 'layout') . '/css/layout.admin.css');
+    backdrop_add_library('layout', 'layout.admin');
   }
 
   /**
@@ -70,7 +69,7 @@ class LayoutRendererEditor extends LayoutRendererStandard {
 
       $output = '<div class="layout-editor-region" id="layout-editor-region-' . $region_id . '" data-region-name="' . $region_id . '">';
       $output .= '<div class="layout-editor-region-title clearfix">';
-      $output .= '<h2 class="label">' . check_plain($this->layout_info['regions'][$region_id]) . '</h2>';
+      $output .= '<h2 class="label">' . check_plain($this->layout_template_info['regions'][$region_id]) . '</h2>';
       $output .= $region_buttons;
       $output .= '</div>';
       $output .= '<div class="layout-editor-region-content">' . $content . '</div>';
@@ -89,7 +88,7 @@ class LayoutRendererEditor extends LayoutRendererStandard {
 
     $output  = '<div class="layout-editor-block" id="layout-editor-title" data-region-name="' . $region_id . '">';
     $output .= '  <div class="layout-editor-block-title clearfix">';
-    $output .= '    <span class="text">' . check_plain($this->layout_info['regions'][$region_id]) . '</span>';
+    $output .= '    <span class="text">' . check_plain($this->layout_template_info['regions'][$region_id]) . '</span>';
     $output .= '    <span class="description">' . $description . '</span>';
     $output .= '    <span class="buttons">' . $region_buttons . '</span>';
     $output .= '  </div>';
@@ -186,7 +185,7 @@ class LayoutRendererEditor extends LayoutRendererStandard {
         'attributes' => array(
           'class' => array('use-ajax'),
           'data-dialog' => TRUE,
-          'data-dialog-options' => json_encode(array('dialogClass' => 'layout-dialog')),
+          'data-dialog-options' => json_encode(array('classes' => array('ui-dialog' => 'layout-dialog'))),
         ),
       );
     }
@@ -197,7 +196,7 @@ class LayoutRendererEditor extends LayoutRendererStandard {
         'attributes' => array(
           'class' => array('use-ajax'),
           'data-dialog' => TRUE,
-          'data-dialog-options' => json_encode(array('dialogClass' => 'layout-dialog')),
+          'data-dialog-options' => json_encode(array('classes' => array('ui-dialog' => 'layout-dialog'))),
         ),
       );
       $links['configure'] = array(
@@ -206,7 +205,7 @@ class LayoutRendererEditor extends LayoutRendererStandard {
         'attributes' => array(
           'class' => array('use-ajax'),
           'data-dialog' => TRUE,
-          'data-dialog-options' => json_encode(array('dialogClass' => 'layout-dialog')),
+          'data-dialog-options' => json_encode(array('classes' => array('ui-dialog' => 'layout-dialog'))),
         ),
       );
     }
@@ -244,7 +243,7 @@ class LayoutRendererEditor extends LayoutRendererStandard {
         'attributes' => array(
           'class' => array('use-ajax'),
           'data-dialog' => TRUE,
-          'data-dialog-options' => json_encode(array('dialogClass' => 'layout-dialog')),
+          'data-dialog-options' => json_encode(array('classes' => array('ui-dialog' => 'layout-dialog'))),
         ),
       );
     }
@@ -256,7 +255,7 @@ class LayoutRendererEditor extends LayoutRendererStandard {
         'attributes' => array(
           'class' => array('use-ajax'),
           'data-dialog' => TRUE,
-          'data-dialog-options' => json_encode(array('dialogClass' => 'layout-dialog')),
+          'data-dialog-options' => json_encode(array('classes' => array('ui-dialog' => 'layout-dialog'))),
         ),
       );
     }

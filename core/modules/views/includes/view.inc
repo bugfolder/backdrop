@@ -896,7 +896,7 @@ class view {
         $breadcrumb_args[] = $arg;
       }
       else {
-        // determine default condition and handle.
+        // Determine default condition and handle.
         $status = $argument->default_action();
         break;
       }
@@ -905,7 +905,7 @@ class view {
       unset($argument);
     }
 
-    // set the title in the build info.
+    // Set the title in the build info.
     if (!empty($title)) {
       $this->build_info['title'] = $title;
     }
@@ -923,7 +923,7 @@ class view {
     if (!empty($this->query)) {
       $class = get_class($this->query);
       if ($class && $class != 'stdClass') {
-        // return if query is already initialized.
+        // Return if query is already initialized.
         return TRUE;
       }
     }
@@ -1285,7 +1285,7 @@ class view {
         $function($this);
       }
 
-      // Let the themes play too, because pre render is a very themey thing.
+      // Let the themes play too, because pre-render is a theme-like thing.
       foreach ($GLOBALS['base_theme_info'] as $base) {
         $function = $base->name . '_views_pre_render';
         if (function_exists($function)) {
@@ -1316,7 +1316,7 @@ class view {
       $function($this, $this->display_handler->output, $cache);
     }
 
-    // Let the themes play too, because post render is a very themey thing.
+    // Let the themes play too, because post-render is a theme-like thing.
     foreach ($GLOBALS['base_theme_info'] as $base) {
       $function = $base->name . '_views_post_render';
       if (function_exists($function)) {
@@ -1759,7 +1759,7 @@ class view {
   }
 
   /**
-   * Add the list of queries run during render to buildinfo.
+   * Add the list of queries run during render to the build info.
    *
    * @see view::start_query_capture()
    */
@@ -1803,7 +1803,7 @@ class view {
     }
     $config_data += array(
       'tag' => $this->tag,
-      'disabled' => (boolean) $this->disabled,
+      'disabled' => (bool) $this->disabled,
       'base_table' => $this->base_table,
       'human_name' => $this->human_name,
       'core' => $this->core,

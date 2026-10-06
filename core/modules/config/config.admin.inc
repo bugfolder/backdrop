@@ -45,7 +45,7 @@ function config_sync_form(array $form, array &$form_state) {
         '#attributes' => array(
           'class' => array('use-ajax'),
           'data-dialog' => 'true',
-          'data-dialog-options' => '{"dialogClass": "config-diff"}',
+          'data-dialog-options' => '{"classes": {"ui-dialog": "config-diff"}}',
         ),
       );
       $row = array(
@@ -207,8 +207,10 @@ function config_download_full_export() {
     'Content-Disposition' => 'attachment; filename=config.tar.gz',
     'Content-type' => 'application/x-gzip',
   );
+  // file_transfer() exits after sending the file, so the temporary archive
+  // must be removed in a shutdown function to ensure it does not persist.
+  backdrop_register_shutdown_function('file_unmanaged_delete', $file_path);
   file_transfer('temporary://' . $filename, $headers);
-  file_unmanaged_delete($file_path);
 }
 
 /**
@@ -520,7 +522,7 @@ function config_get_statuses() {
         try {
           $active_config = $active_storage->read($filename);
           $staging_config = $staging_storage->read($filename);
-          if ($active_config != $staging_config) {
+          if ($active_config !== $staging_config) {
             $config_statuses[$filename] = 'update';
           }
         }
